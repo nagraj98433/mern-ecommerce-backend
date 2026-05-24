@@ -11,9 +11,15 @@ dotenv.config();
 const app = express();
 
 // ✅ Allow your Vercel frontend
+
+const allowedOrigins = [
+  "http://localhost:5173", // Vite dev server
+  "https://mern-ecommerce-app-ochre.vercel.app", // Vercel production
+];
+
 app.use(
   cors({
-    origin: "https://mern-ecommerce-app-ochre.vercel.app", // no trailing slash
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
@@ -39,14 +45,16 @@ app.get("/", (req, res) => {
 });
 
 mongoose
-  .connect(process.env.MONGO_URI)
-
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000, // fail fast instead of hanging
+  })
   .then(() => {
     console.log("✅ MongoDB Atlas Connected");
   })
-
   .catch((err) => {
-    console.log(err);
+    console.error("❌ MongoDB connection error:", err.message);
   });
 
 const PORT = process.env.PORT || 5000;

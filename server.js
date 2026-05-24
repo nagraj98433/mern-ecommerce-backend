@@ -10,7 +10,14 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// ✅ Allow your Vercel frontend
+app.use(
+  cors({
+    origin: "https://mern-ecommerce-app-ochre.vercel.app", // no trailing slash
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
@@ -35,7 +42,7 @@ mongoose
   .connect(process.env.MONGO_URI)
 
   .then(() => {
-    console.log("MongoDB Connected");
+    console.log("✅ MongoDB Atlas Connected");
   })
 
   .catch((err) => {
